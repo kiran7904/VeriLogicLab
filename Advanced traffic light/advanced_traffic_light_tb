@@ -1,0 +1,82 @@
+`timescale 1ns / 1ps
+
+module advanced_traffic_light_tb;
+
+    reg clk;
+    reg reset;
+    reg Sa, Sb;
+    reg emergency_A, emergency_B;
+    reg pedestrian_A, pedestrian_B;
+    reg accident;
+    reg public_transport_A, public_transport_B;
+
+    wire Ra, Rb, Ga, Gb, Ya, Yb;
+
+    advanced_traffic_light uut (
+        .clk(clk),
+        .reset(reset),
+        .Sa(Sa),
+        .Sb(Sb),
+        .Ra(Ra),
+        .Rb(Rb),
+        .Ga(Ga),
+        .Gb(Gb),
+        .Ya(Ya),
+        .Yb(Yb),
+        .emergency_A(emergency_A),
+        .emergency_B(emergency_B),
+        .pedestrian_A(pedestrian_A),
+        .pedestrian_B(pedestrian_B),
+        .accident(accident),
+        .public_transport_A(public_transport_A),
+        .public_transport_B(public_transport_B)
+    );
+
+    always #5 clk = ~clk;
+
+    initial begin
+        clk = 0;
+        reset = 1;
+        Sa = 0; Sb = 0;
+        emergency_A = 0; emergency_B = 0;
+        pedestrian_A = 0; pedestrian_B = 0;
+        accident = 0;
+        public_transport_A = 0; public_transport_B = 0;
+
+        #10 reset = 0;
+
+        #20;
+        Sa = 1; Sb = 0;
+        #500;
+
+        pedestrian_A = 1;
+        #200;
+        pedestrian_A = 0;
+
+        emergency_A = 1;
+        #200;
+        emergency_A = 0;
+
+        accident = 1;
+        #200;
+        accident = 0;
+
+        public_transport_B = 1;
+        #300;
+        public_transport_B = 0;
+
+        pedestrian_B = 1;
+        emergency_B = 1;
+        #400;
+        pedestrian_B = 0;
+        emergency_B = 0;
+
+        $finish;
+    end
+
+    initial begin
+        $monitor("Time: %0t | Ra: %b | Rb: %b | Ga: %b | Gb: %b | Ya: %b | Yb: %b", 
+                 $time, Ra, Rb, Ga, Gb, Ya, Yb);
+    end
+
+endmodule
