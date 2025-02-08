@@ -1,0 +1,55 @@
+`timescale 1ns / 1ps
+module tb_basic_elevator_control;
+
+    reg clk;
+    reg reset;
+    reg [1:0] floor_request;
+    reg [1:0] current_floor;
+    wire motor_up;
+    wire motor_down;
+    wire door_open;
+
+    basic_elevator_control uut (
+        .clk(clk),
+        .reset(reset),
+        .floor_request(floor_request),
+        .current_floor(current_floor),
+        .motor_up(motor_up),
+        .motor_down(motor_down),
+        .door_open(door_open)
+    );
+
+    always #5 clk = ~clk;
+
+    initial begin
+        clk = 0;
+        reset = 1;
+        floor_request = 2'b00;
+        current_floor = 2'b00;
+        #10;
+        reset = 0;
+
+        $display("Test Case 1: Move from Floor 1 to Floor 3");
+        floor_request = 2'b10;
+        #50;
+
+        $display("Test Case 2: Move from Floor 3 to Floor 2");
+        current_floor = 2'b10;
+        floor_request = 2'b01;
+        #50;
+
+        $display("Test Case 3: Move from Floor 2 to Floor 1");
+        current_floor = 2'b01;
+        floor_request = 2'b00;
+        #50;
+
+        $display("Test Case 4: Stay at Floor 1");
+        current_floor = 2'b00;
+        floor_request = 2'b00;
+        #50;
+
+        $display("Simulation Complete");
+        $stop;
+    end
+
+endmodule
