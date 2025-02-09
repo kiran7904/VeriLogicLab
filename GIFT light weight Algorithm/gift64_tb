@@ -1,0 +1,31 @@
+module GIFT64_tb;
+    reg clk;
+    reg rst;
+    reg [63:0] plaintext;
+    reg [127:0] key;
+    reg encrypt;
+    wire [63:0] ciphertext;
+
+    GIFT64 uut (
+        .clk(clk),
+        .rst(rst),
+        .plaintext(plaintext),
+        .key(key),
+        .encrypt(encrypt),
+        .ciphertext(ciphertext)
+    );
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    initial begin
+        rst = 1;
+        plaintext = 64'h0123456789abcdef;
+        key = 128'h0f1e2d3c4b5a69788796a5b4c3d2e1f0;
+        encrypt = 1;
+        #10 rst = 0;
+        #500 $stop;
+    end
+endmodule
