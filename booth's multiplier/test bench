@@ -1,0 +1,35 @@
+module TestBench;
+    reg [7:0] Multiplicand;
+    reg [7:0] Multiplier;
+    wire [15:0] Product;
+
+    BoothMultiplier uut (
+        .Multiplicand(Multiplicand),
+        .Multiplier(Multiplier),
+        .Product(Product)
+    );
+
+    initial begin
+        Multiplicand = -5;
+        Multiplier = 3;
+        #10;
+        $display("Multiplicand = %d, Multiplier = %d, Product = %d", Multiplicand, Multiplier, Product);
+        
+        Multiplicand = 7;
+        Multiplier = -3;
+        #10;
+        $display("Multiplicand = %d, Multiplier = %d, Product = %d", Multiplicand, Multiplier, Product);
+        
+        Multiplicand = -6;
+        Multiplier = -4;
+        #10;
+        $display("Multiplicand = %d, Multiplier = %d, Product = %d", Multiplicand, Multiplier, Product);
+        
+        Multiplicand = 12;
+        Multiplier = 5;
+        #10;
+        $display("Multiplicand = %d, Multiplier = %d, Product = %d", Multiplicand, Multiplier, Product);
+        
+        $finish;
+    end
+endmodule
