@@ -1,0 +1,28 @@
+module BoothMultiplier (
+    input [7:0] Multiplicand,
+    input [7:0] Multiplier,
+    output reg [15:0] Product
+);
+    reg [15:0] A;
+    reg [7:0] Q;
+    reg Q_1;
+    reg [3:0] count;
+    
+    always @(*) begin
+        A = 16'b0;
+        Q = Multiplier;
+        Q_1 = 1'b0;
+        count = 4'b1000;
+
+        while (count > 0) begin
+            case ({Q[0], Q_1})
+                2'b01: A = A + {{8{Multiplicand[7]}}, Multiplicand};
+                2'b10: A = A - {{8{Multiplicand[7]}}, Multiplicand};
+            endcase
+
+            {A, Q, Q_1} = {A[15], A, Q};  
+            count = count - 1;
+        end
+        Product = {A, Q};
+    end
+endmodule
