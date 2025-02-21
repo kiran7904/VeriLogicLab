@@ -22,6 +22,7 @@ module GIFT64 (
                 round_keys[i] <= {round_keys[i-1][63:0], round_keys[i-1][127:64]} ^ (i * 32'h1B);
             end
         end
+        ![Image](https://github.com/user-attachments/assets/b7d1f7a4-8c1c-452e-8a83-ffa914340bec)
     end
 
     reg [3:0] lfsr;
