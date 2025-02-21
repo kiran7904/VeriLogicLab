@@ -1,0 +1,28 @@
+module tb_GIFT64();
+    reg clk, rst, encrypt;
+    reg [63:0] plaintext;
+    reg [127:0] key;
+    wire [63:0] ciphertext;
+    
+    GIFT64 uut (
+        .clk(clk),
+        .rst(rst),
+        .plaintext(plaintext),
+        .key(key),
+        .encrypt(encrypt),
+        .ciphertext(ciphertext)
+    );
+    
+    always #5 clk = ~clk;
+    
+    initial begin
+        clk = 0; rst = 1; encrypt = 0;
+        plaintext = 64'h6b6972616e736b20;//kiransk
+        key = 128'h00112233445566778899aabbccddeeff;
+        #10 rst = 0;
+        #10 encrypt = 1;
+        #200;
+        $display("Encrypted Data: %h", ciphertext);
+        $stop;
+    end
+endmodule
