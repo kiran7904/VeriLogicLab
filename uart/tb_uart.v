@@ -17,7 +17,7 @@ uart_top uut (
     .data_ready(data_ready)
 );
 
-always #10 clk = ~clk;  // 50 MHz Clock
+always #10 clk = ~clk; 
 
 initial begin
     #100;
