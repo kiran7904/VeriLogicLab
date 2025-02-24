@@ -1,7 +1,7 @@
 module uart_rx (
     input wire clk,
     input wire rx_en,
-    input wire rx,       // UART receive line
+    input wire rx,      
     output reg [7:0] data_out,
     output reg ready
 );
@@ -11,7 +11,7 @@ reg [7:0] shift_reg = 0;
 reg receiving = 0;
 
 always @(posedge clk) begin
-    if (!receiving && !rx) begin  // Start bit detected
+    if (!receiving && !rx) begin  
         receiving <= 1;
         bit_index <= 0;
     end
