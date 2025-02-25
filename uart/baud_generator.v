@@ -1,20 +1,33 @@
 module baud_generator (
     input wire clk,      
-    output wire rx_en,  
-    output wire tx_en    
+    output reg rx_en,  
+    output reg tx_en    
 );
 
-parameter RX_MAX = 50000000 / (115200 * 16);
-parameter TX_MAX = 50000000 / 115200;
-reg [15:0] rx_count = 0;
-reg [15:0] tx_count = 0;
+integer RX_MAX = 50000000 / (115200 * 16);
+integer TX_MAX = 50000000 / 115200;      
 
-assign rx_en = (rx_count == 0);
-assign tx_en = (tx_count == 0);
+reg [4:0] rx_count = 0; 
+reg [8:0] tx_count = 0; 
 
 always @(posedge clk) begin
-    rx_count <= (rx_count == RX_MAX - 1) ? 0 : rx_count + 1;
-    tx_count <= (tx_count == TX_MAX - 1) ? 0 : tx_count + 1;
+    if (rx_count == RX_MAX - 1) begin
+        rx_count <= 0;
+        rx_en <= 1; 
+    end else begin
+        rx_count <= rx_count + 1;
+        rx_en <= 0;
+    end
+end
+
+always @(posedge clk) begin
+    if (tx_count == TX_MAX - 1) begin
+        tx_count <= 0;
+        tx_en <= 1;
+    end else begin
+        tx_count <= tx_count + 1;
+        tx_en <= 0;
+    end
 end
 
 endmodule
