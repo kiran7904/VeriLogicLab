@@ -1,11 +1,16 @@
-module GIFT64_tb;
+`timescale 1ns / 1ps
+
+module tb_GIFT64;
+
     reg clk;
     reg rst;
+    reg encrypt;
     reg [63:0] plaintext;
     reg [127:0] key;
-    reg encrypt;
     wire [63:0] ciphertext;
 
+    reg [63:0] encrypted_result;
+    reg [63:0] decrypted_output;
     GIFT64 uut (
         .clk(clk),
         .rst(rst),
@@ -19,13 +24,33 @@ module GIFT64_tb;
         clk = 0;
         forever #5 clk = ~clk;
     end
-
     initial begin
+        $display("=== Starting GIFT64 Test ===");
         rst = 1;
-        plaintext = 64'h0123456789abcdef;
-        key = 128'h0f1e2d3c4b5a69788796a5b4c3d2e1f0;
+        encrypt = 0;
+        plaintext = 64'h1122334455667788;
+        key = 128'h00112233445566778899AABBCCDDEEFF;
+        #10;
+
+        rst = 0;
         encrypt = 1;
-        #10 rst = 0;
-        #500 $stop;
+        #20; 
+
+        encrypted_result = ciphertext;
+        $display("Encrypted: %h", encrypted_result);
+        plaintext = encrypted_result;
+        encrypt = 0;
+        #20;
+
+        decrypted_output = ciphertext;
+        $display("Decrypted: %h", decrypted_output);
+
+        if (decrypted_output == 64'h1122334455667788)
+            $display("✅ Test Passed: Decrypted matches original plaintext.");
+        else
+            $display("❌ Test Failed: Decrypted output doesn't match.");
+
+        $finish;
     end
+
 endmodule
