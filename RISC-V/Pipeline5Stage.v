@@ -1,6 +1,7 @@
 module Pipeline5Stage(
     input clk,
-    input reset
+    input reset,
+    input [31:0] pc_in
 );
 
 reg [31:0] pc;
