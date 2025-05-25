@@ -1,13 +1,14 @@
 # 🧠 5-Stage Pipelined RISC-V Processor (Verilog)
 
 This project implements a simple 5-stage pipelined processor for a subset of RISC-V instructions using Verilog. The five stages of the pipeline are Instruction Fetch (IF), Instruction Decode (ID), Execute (EX), Memory Access (MEM), and Write Back (WB).
-| Field  | Bits     |
-| ------ | -------- |
-| imm    | [31:20] |
-| rs1    | [19:15] |
-| funct3 | [14:12] |
-| rd     | [11:7]  |
-| opcode | [6:0]   |
+| Field Name | Bits     | # Bits | Example Value  | Purpose / Description                               |
+| ---------- | -------- | ------ | -------------- | --------------------------------------------------- |
+| `imm`      | [31:20] | 12     | `000000000001` | 12-bit signed immediate (constant to add)           |
+| `rs1`      | [19:15] | 5      | `00000`        | Source register 1 (here, `x0` which is always zero) |
+| `funct3`   | [14:12] | 3      | `000`          | Operation type: `000` = `ADDI`                      |
+| `rd`       | [11:7]  | 5      | `00001`        | Destination register (here, `x1`)                   |
+| `opcode`   | [6:0]   | 7      | `0010011`      | I-type ALU operation (`ADDI`, `SLTI`, `XORI`, etc.) |
+
 addi x1, x0, 1
 Fields:
 imm = 1 = 000000000001 (12 bits)
