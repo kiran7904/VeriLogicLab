@@ -9,6 +9,15 @@ This project implements a simple 5-stage pipelined processor for a subset of RIS
 | `rd`       | [11:7]  | 5      | `00001`        | Destination register (here, `x1`)                   |
 | `opcode`   | [6:0]   | 7      | `0010011`      | I-type ALU operation (`ADDI`, `SLTI`, `XORI`, etc.) |
 
+
+| Instruction        | Format | Fields Breakdown                                                                                                              | Hex Code     | Description                |     |
+| ------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------------- | --- |
+| `sub x5, x6, x7`   | R-type | funct7=`0100000`, rs2=`x7=00111`, rs1=`x6=00110`, funct3=`000`, rd=`x5=00101`, opcode=`0110011`                               | `0x40E3B2B3` | x5 = x6 - x7               |     |
+| `and x8, x9, x10`  | R-type | funct7=`0000000`, rs2=`x10=01010`, rs1=`x9=01001`, funct3=`111`, rd=`x8=01000`, opcode=`0110011`                              | `0x00A4C433` | x8 = x9 & x10              |     |
+| `or x11, x12, x13` | R-type | funct7=`0000000`, rs2=`x13=01101`, rs1=`x12=01100`, funct3=`110`, rd=`x11=01011`, opcode=`0110011`                            | `0x00D666B3` | x11 = x12                  | x13 |
+| `sw x14, 8(x15)`   | S-type | imm=`0000000001000`, rs2=`x14=01110`, rs1=`x15=01111`, funct3=`010`, split imm:`0000000` (hi), `01000` (lo), opcode=`0100011` | `0x00E7A423` | store x14 at address x15+8 |     |
+
+
 addi x1, x0, 1
 Fields:
 imm = 1 = 000000000001 (12 bits)
