@@ -9,20 +9,28 @@ module IF_stage(
 reg [31:0] instr_mem [0:15];
 
 initial begin
-    instr_mem[0] = 32'h00000013; // NOP
-    instr_mem[1] = 32'h00100093; // addi x1, x0, 1
-    instr_mem[2] = 32'h00200113; // addi x2, x0, 2
-    instr_mem[3] = 32'h00308193; // addi x3, x1, 3
-    instr_mem[4] = 32'h00410213; // addi x4, x2, 4
-    // Fill rest with NOP
-    for (int i = 5; i < 16; i = i + 1)
-        instr_mem[i] = 32'h00000013;
+    instr_mem[0] = 32'h00000013;
+    instr_mem[1] = 32'h00100093;
+    instr_mem[2] = 32'h00200113;
+    instr_mem[3] = 32'h00308193;
+    instr_mem[4] = 32'h00410213;
+    instr_mem[5] = 32'h00000013;
+    instr_mem[6] = 32'h00000013;
+    instr_mem[7] = 32'h00000013;
+    instr_mem[8] = 32'h00000013;
+    instr_mem[9] = 32'h00000013;
+    instr_mem[10] = 32'h00000013;
+    instr_mem[11] = 32'h00000013;
+    instr_mem[12] = 32'h00000013;
+    instr_mem[13] = 32'h00000013;
+    instr_mem[14] = 32'h00000013;
+    instr_mem[15] = 32'h00000013;
 end
 
 always @(posedge clk or posedge reset) begin
     if (reset) begin
-        pc_out <= 32'd0;
-        instruction <= 32'd0;
+        pc_out <= 0;
+        instruction <= 0;
     end else begin
         instruction <= instr_mem[pc_in[5:2]];
         pc_out <= pc_in + 4;
