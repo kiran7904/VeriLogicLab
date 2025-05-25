@@ -42,8 +42,6 @@ opcode = 0010011
 
 Binary:
 ini
-Copy
-Edit
 imm     = 000000000001
 rs1     = 00000
 funct3  = 000
