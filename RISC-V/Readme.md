@@ -1,6 +1,13 @@
 # 🧠 5-Stage Pipelined RISC-V Processor (Verilog)
 
 This project implements a simple 5-stage pipelined processor for a subset of RISC-V instructions using Verilog. The five stages of the pipeline are Instruction Fetch (IF), Instruction Decode (ID), Execute (EX), Memory Access (MEM), and Write Back (WB).
+| Field  | Bits     |
+| ------ | -------- |
+| imm    | [31:20] |
+| rs1    | [19:15] |
+| funct3 | [14:12] |
+| rd     | [11:7]  |
+| opcode | [6:0]   |
 
 ---
 | Instruction | Opcode (binary) | Notes         |
