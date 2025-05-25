@@ -17,6 +17,16 @@ This project implements a simple 5-stage pipelined processor for a subset of RIS
 | `or x11, x12, x13` | R-type | funct7=`0000000`, rs2=`x13=01101`, rs1=`x12=01100`, funct3=`110`, rd=`x11=01011`, opcode=`0110011`                            | `0x00D666B3` | x11 = x12                  | x13 |
 | `sw x14, 8(x15)`   | S-type | imm=`0000000001000`, rs2=`x14=01110`, rs1=`x15=01111`, funct3=`010`, split imm:`0000000` (hi), `01000` (lo), opcode=`0100011` | `0x00E7A423` | store x14 at address x15+8 |     |
 
+| Instruction | Type   | `funct7`  | `funct3` | Opcode    | Description                 |
+| ----------- | ------ | --------- | -------- | --------- | --------------------------- |
+| `add`       | R-type | `0000000` | `000`    | `0110011` | x\[rd] = x\[rs1] + x\[rs2]  |
+| `sub`       | R-type | `0100000` | `000`    | `0110011` | x\[rd] = x\[rs1] - x\[rs2]  |
+| `and`       | R-type | `0000000` | `111`    | `0110011` | x\[rd] = x\[rs1] & x\[rs2]  |
+| `or`        | R-type | `0000000` | `110`    | `0110011` | x\[rd] = x\[rs1] \| x\[rs2] |
+| `xor`       | R-type | `0000000` | `100`    | `0110011` | x\[rd] = x\[rs1] ^ x\[rs2]  |
+| `sll`       | R-type | `0000000` | `001`    | `0110011` | x\[rd] = x\[rs1] << x\[rs2] |
+| `srl`       | R-type | `0000000` | `101`    | `0110011` | x\[rd] = x\[rs1] >> x\[rs2] |
+| `sra`       | R-type | `0100000` | `101`    | `0110011` | Arithmetic right shift      |
 
 addi x1, x0, 1
 Fields:
