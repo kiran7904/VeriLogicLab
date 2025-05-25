@@ -8,7 +8,40 @@ This project implements a simple 5-stage pipelined processor for a subset of RIS
 | funct3 | [14:12] |
 | rd     | [11:7]  |
 | opcode | [6:0]   |
+addi x1, x0, 1
+Fields:
+imm = 1 = 000000000001 (12 bits)
 
+rs1 = x0 = 00000
+
+funct3 = 000
+
+rd = x1 = 00001
+
+opcode = 0010011
+
+Binary:
+ini
+Copy
+Edit
+imm     = 000000000001
+rs1     = 00000
+funct3  = 000
+rd      = 00001
+opcode  = 0010011
+Concatenated:
+000000000001 00000 000 00001 0010011
+
+That’s:
+
+Copy
+Edit
+00000000000100000000000010010011
+Binary → Hex:
+
+Copy
+Edit
+0x00100093
 ---
 | Instruction | Opcode (binary) | Notes         |
 | ----------- | --------------- | ------------- |
