@@ -1,181 +1,153 @@
 # 🧠 5-Stage Pipelined RISC-V Processor (Verilog)
 
-This project implements a simple 5-stage pipelined processor for a subset of RISC-V instructions using Verilog. The five stages of the pipeline are Instruction Fetch (IF), Instruction Decode (ID), Execute (EX), Memory Access (MEM), and Write Back (WB).
-| Field Name | Bits     | # Bits | Example Value  | Purpose / Description                               |
-| ---------- | -------- | ------ | -------------- | --------------------------------------------------- |
-| `imm`      | [31:20] | 12     | `000000000001` | 12-bit signed immediate (constant to add)           |
-| `rs1`      | [19:15] | 5      | `00000`        | Source register 1 (here, `x0` which is always zero) |
-| `funct3`   | [14:12] | 3      | `000`          | Operation type: `000` = `ADDI`                      |
-| `rd`       | [11:7]  | 5      | `00001`        | Destination register (here, `x1`)                   |
-| `opcode`   | [6:0]   | 7      | `0010011`      | I-type ALU operation (`ADDI`, `SLTI`, `XORI`, etc.) |
+This project implements a simplified 5-stage pipelined processor using Verilog for a subset of RISC-V instructions. It is designed to help learners understand the key concepts of pipelining in processor architecture.
 
+## 📌 Overview
 
-| Instruction        | Format | Fields Breakdown                                                                                                              | Hex Code     | Description                |     |
-| ------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------------- | --- |
-| `sub x5, x6, x7`   | R-type | funct7=`0100000`, rs2=`x7=00111`, rs1=`x6=00110`, funct3=`000`, rd=`x5=00101`, opcode=`0110011`                               | `0x40E3B2B3` | x5 = x6 - x7               |     |
-| `and x8, x9, x10`  | R-type | funct7=`0000000`, rs2=`x10=01010`, rs1=`x9=01001`, funct3=`111`, rd=`x8=01000`, opcode=`0110011`                              | `0x00A4C433` | x8 = x9 & x10              |     |
-| `or x11, x12, x13` | R-type | funct7=`0000000`, rs2=`x13=01101`, rs1=`x12=01100`, funct3=`110`, rd=`x11=01011`, opcode=`0110011`                            | `0x00D666B3` | x11 = x12                  | x13 |
-| `sw x14, 8(x15)`   | S-type | imm=`0000000001000`, rs2=`x14=01110`, rs1=`x15=01111`, funct3=`010`, split imm:`0000000` (hi), `01000` (lo), opcode=`0100011` | `0x00E7A423` | store x14 at address x15+8 |     |
+The pipeline consists of the following stages:
 
-| Instruction | Type   | `funct7`  | `funct3` | Opcode    | Description                 |
-| ----------- | ------ | --------- | -------- | --------- | --------------------------- |
-| `add`       | R-type | `0000000` | `000`    | `0110011` | x\[rd] = x\[rs1] + x\[rs2]  |
-| `sub`       | R-type | `0100000` | `000`    | `0110011` | x\[rd] = x\[rs1] - x\[rs2]  |
-| `and`       | R-type | `0000000` | `111`    | `0110011` | x\[rd] = x\[rs1] & x\[rs2]  |
-| `or`        | R-type | `0000000` | `110`    | `0110011` | x\[rd] = x\[rs1] \| x\[rs2] |
-| `xor`       | R-type | `0000000` | `100`    | `0110011` | x\[rd] = x\[rs1] ^ x\[rs2]  |
-| `sll`       | R-type | `0000000` | `001`    | `0110011` | x\[rd] = x\[rs1] << x\[rs2] |
-| `srl`       | R-type | `0000000` | `101`    | `0110011` | x\[rd] = x\[rs1] >> x\[rs2] |
-| `sra`       | R-type | `0100000` | `101`    | `0110011` | Arithmetic right shift      |
-
-addi x1, x0, 1
-Fields:
-imm = 1 = 000000000001 (12 bits)
-
-rs1 = x0 = 00000
-
-funct3 = 000
-
-rd = x1 = 00001
-
-opcode = 0010011
-
-Binary:
-ini
-imm     = 000000000001
-rs1     = 00000
-funct3  = 000
-rd      = 00001
-opcode  = 0010011
-Concatenated:
-000000000001 00000 000 00001 0010011
-
-That’s:
-00000000000100000000000010010011
-Binary → Hex:
-0x00100093
----
-| Instruction | Opcode (binary) | Notes         |
-| ----------- | --------------- | ------------- |
-| addi        | 0010011         | I-type        |
-| lw          | 0000011         | I-type load   |
-| sw          | 0100011         | S-type store  |
-| beq         | 1100011         | B-type branch |
-| jal         | 1101111         | J-type jump   |
-| Index | Hex Value  | Assembly Instruction   | Meaning / Purpose           |
-| ----- | ---------- | ---------------------- | --------------------------- |
-| 0     | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation (does nothing) |
-| 1     | 0x00100093 | `addi x1, x0, 1`       | Set register x1 to 1        |
-| 2     | 0x00200113 | `addi x2, x0, 2`       | Set register x2 to 2        |
-| 3     | 0x00308193 | `addi x3, x1, 3`       | Set register x3 = x1 + 3    |
-| 4     | 0x00410213 | `addi x4, x2, 4`       | Set register x4 = x2 + 4    |
-| 5     | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 6     | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 7     | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 8     | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 9     | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 10    | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 11    | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 12    | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 13    | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 14    | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-| 15    | 0x00000013 | `addi x0, x0, 0` (NOP) | No operation                |
-
-## 🧩 Pipeline Stages
-
-| Stage | Name           | Description                                                                 |
-|-------|----------------|-----------------------------------------------------------------------------|
-| 1     | IF (Fetch)     | Fetch instruction from the instruction memory                               |
-| 2     | ID (Decode)    | Decode the instruction and read operands from the register file             |
-| 3     | EX (Execute)   | Perform ALU operations                                                      |
-| 4     | MEM (Memory)   | Memory access stage (not used here, placeholder)                            |
-| 5     | WB (WriteBack) | Write the result back to the destination register                           |
+| Stage | Name           | Description                                                       |
+|-------|----------------|-------------------------------------------------------------------|
+| 1     | IF (Fetch)     | Fetch instruction from instruction memory                         |
+| 2     | ID (Decode)    | Decode instruction and read registers                             |
+| 3     | EX (Execute)   | Perform ALU operations                                            |
+| 4     | MEM (Memory)   | Memory access (placeholder, not used in this project)             |
+| 5     | WB (WriteBack) | Write the result back to the destination register                 |
 
 ---
 
 ## 💾 Instruction Memory Contents
 
-These instructions are preloaded into `instr_mem` for demonstration.
+The following instructions are preloaded into `instr_mem`:
 
-| Index | Hex Value  | Assembly Instruction   | Meaning / Purpose           |
-| ----- | ---------- | ---------------------- | --------------------------- |
-| 0     | 0x00000013 | `addi x0, x0, 0`       | NOP (no operation)          |
-| 1     | 0x00100093 | `addi x1, x0, 1`       | Set x1 = 0 + 1              |
-| 2     | 0x00200113 | `addi x2, x0, 2`       | Set x2 = 0 + 2              |
-| 3     | 0x00308193 | `addi x3, x1, 3`       | Set x3 = x1 + 3             |
-| 4     | 0x00410213 | `addi x4, x2, 4`       | Set x4 = x2 + 4             |
-| 5     | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 6     | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 7     | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 8     | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 9     | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 10    | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 11    | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 12    | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 13    | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 14    | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
-| 15    | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
+| Index | Hex Value  | Assembly Instruction   | Description                 |
+|-------|------------|------------------------|-----------------------------|
+| 0     | 0x00000013 | `addi x0, x0, 0`       | NOP                         |
+| 1     | 0x00100093 | `addi x1, x0, 1`       | Set x1 = 1                  |
+| 2     | 0x00200113 | `addi x2, x0, 2`       | Set x2 = 2                  |
+| 3     | 0x00308193 | `addi x3, x1, 3`       | x3 = x1 + 3                 |
+| 4     | 0x00410213 | `addi x4, x2, 4`       | x4 = x2 + 4                 |
+| 5–15  | 0x00000013 | `addi x0, x0, 0`       | NOPs to flush pipeline      |
 
 ---
 
-## 🔧 Modules Used
+## 🧩 Instruction Format Breakdown
+
+### Example: `addi x1, x0, 1`
+
+| Field     | Bits     | Value          |
+|-----------|----------|----------------|
+| `imm`     | [31:20]  | `000000000001` |
+| `rs1`     | [19:15]  | `00000` (x0)   |
+| `funct3`  | [14:12]  | `000`          |
+| `rd`      | [11:7]   | `00001` (x1)   |
+| `opcode`  | [6:0]    | `0010011`      |
+| Binary    |          | `00000000000100000000000010010011` |
+| Hex       |          | `0x00100093`   |
+
+---
+
+## 🧮 Supported Instructions
+
+### R-Type
+
+| Instruction | `funct7`  | `funct3` | Opcode    | Description                        |
+|-------------|-----------|----------|-----------|------------------------------------|
+| `add`       | 0000000   | 000      | 0110011   | x[rd] = x[rs1] + x[rs2]            |
+| `sub`       | 0100000   | 000      | 0110011   | x[rd] = x[rs1] - x[rs2]            |
+| `and`       | 0000000   | 111      | 0110011   | x[rd] = x[rs1] & x[rs2]            |
+| `or`        | 0000000   | 110      | 0110011   | x[rd] = x[rs1] \| x[rs2]           |
+| `xor`       | 0000000   | 100      | 0110011   | x[rd] = x[rs1] ^ x[rs2]            |
+| `sll`       | 0000000   | 001      | 0110011   | x[rd] = x[rs1] << x[rs2]           |
+| `srl`       | 0000000   | 101      | 0110011   | x[rd] = x[rs1] >> x[rs2]           |
+| `sra`       | 0100000   | 101      | 0110011   | Arithmetic right shift             |
+
+### I-Type
+
+| Instruction | Opcode   | Description                     |
+|-------------|----------|---------------------------------|
+| `addi`      | 0010011  | x[rd] = x[rs1] + imm            |
+| `lw`        | 0000011  | Load word (not implemented yet) |
+
+### S-Type
+
+| Instruction | Opcode   | Description                     |
+|-------------|----------|---------------------------------|
+| `sw`        | 0100011  | Store word (not implemented)    |
+
+### Other
+
+| Instruction | Opcode   | Type      |
+|-------------|----------|-----------|
+| `beq`       | 1100011  | B-type    |
+| `jal`       | 1101111  | J-type    |
+
+---
+
+## 🔧 Modules
 
 ### `reg_file.v`
-Implements 32 registers (x0 to x31) with:
+- Implements 32 registers (x0 to x31)
+- x0 is hardwired to 0
 - Asynchronous reads
 - Synchronous writes
-- x0 is always zero
 
 ### `alu.v`
-A basic ALU supporting:
-- `add` operation (opcode control = 00)
-- `sub` operation (opcode control = 01)
+- Supports `add` and `sub` operations
+- Controlled via 2-bit ALU control signal
 
 ### `pipeline_5stage.v`
-The top module that implements:
-- Instruction fetch
-- Register decode
-- ALU execution
-- Register write-back
-- Pipeline stage registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
+- Top module
+- Implements all 5 pipeline stages
+- Includes:
+  - Pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB)
+  - Instruction decoding and control signals
+  - Simple data path for ALU and register file
 
 ---
 
-## 📘 How Instructions Flow (Example)
+## 📘 Instruction Flow (Example)
 
 For `addi x3, x1, 3`:
 
-- IF: Fetch from `instr_mem[3]`
-- ID: rs1 = x1 (value 1), imm = 3
-- EX: ALU computes 1 + 3 = 4
-- MEM: (No operation)
-- WB: Write 4 into x3
+| Stage | Operation                                  |
+|-------|--------------------------------------------|
+| IF    | Fetch from `instr_mem[3]`                  |
+| ID    | Read x1 = 1, immediate = 3                 |
+| EX    | ALU computes 1 + 3 = 4                     |
+| MEM   | (Skipped – no memory access)               |
+| WB    | Write result (4) into register x3          |
 
 ---
 
 ## ✅ Features
 
-- Instruction execution across 5 pipeline stages
-- Support for `addi`, `add`, `sub` (easy to extend more)
-- Simple NOPs to fill gaps between instructions
-- Useful for beginners to understand how pipelines operate
+- 5-stage pipelined execution
+- Instruction memory with preload support
+- Easy-to-understand pipeline registers and control flow
+- Basic `add`, `sub`, `addi` support
+- Useful for beginners and educational demos
 
 ---
 
 ## 🚫 Limitations
 
-- No support for load/store or branches
-- No hazard detection or data forwarding
-- No control hazard handling
-- ALU only supports add and sub
+- No hazard detection or forwarding
+- No branching or jumps implemented
+- No memory operations (`lw`, `sw`)
+- ALU only supports limited operations
 
 ---
 
-## 🙋 Author
+## 👨‍💻 Author
 
 **Kiran Kumar Siripurapu**  
-3rd Year, Electronics and Communication Engineering  
+3rd Year B.Tech, Electronics and Communication Engineering  
 RGUKT Srikakulam  
-🔬 Passionate about VLSI and RISC-V architecture design
+📍 Passionate about VLSI and RISC-V architecture design  
 
 ---
+
+## 📂 License
+
+This project is for educational and personal use. Feel free to fork, contribute, or extend for learning purposes.
