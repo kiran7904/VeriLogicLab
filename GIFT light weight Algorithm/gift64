@@ -16,46 +16,21 @@ module GIFT64 (
     function [3:0] SBox(input [3:0] x);
         begin
             case (x)
-                4'h0: SBox = 4'h1;  
-                4'h1: SBox = 4'hA;  
-                4'h2: SBox = 4'h4;  
-                4'h3: SBox = 4'hC;
-                4'h4: SBox = 4'h6;  
-                4'h5: SBox = 4'hF;  
-                4'h6: SBox = 4'hB;  
-                4'h7: SBox = 4'hD;
-                4'h8: SBox = 4'h9;  
-                4'h9: SBox = 4'h2;  
-                4'hA: SBox = 4'h5;  
-                4'hB: SBox = 4'hE;
-                4'hC: SBox = 4'h7;  
-                4'hD: SBox = 4'h8;  
-                4'hE: SBox = 4'h3;  
-                4'hF: SBox = 4'h0;
+                4'h0: SBox = 4'h1;  4'h1: SBox = 4'hA;  4'h2: SBox = 4'h4;  4'h3: SBox = 4'hC;
+                4'h4: SBox = 4'h6;  4'h5: SBox = 4'hF;  4'h6: SBox = 4'hB;  4'h7: SBox = 4'hD;
+                4'h8: SBox = 4'h9;  4'h9: SBox = 4'h2;  4'hA: SBox = 4'h5;  4'hB: SBox = 4'hE;
+                4'hC: SBox = 4'h7;  4'hD: SBox = 4'h8;  4'hE: SBox = 4'h3;  4'hF: SBox = 4'h0;
                 default: SBox = 4'h0;
             endcase
         end
     endfunction
-
     function [3:0] InvSBox(input [3:0] x);
         begin
             case (x)
-                4'h1: InvSBox = 4'h0;  
-                4'hA: InvSBox = 4'h1;  
-                4'h4: InvSBox = 4'h2;  
-                4'hC: InvSBox = 4'h3;
-                4'h6: InvSBox = 4'h4;  
-                4'hF: InvSBox = 4'h5;  
-                4'hB: InvSBox = 4'h6;  
-                4'hD: InvSBox = 4'h7;
-                4'h9: InvSBox = 4'h8;  
-                4'h2: InvSBox = 4'h9;  
-                4'h5: InvSBox = 4'hA;  
-                4'hE: InvSBox = 4'hB;
-                4'h7: InvSBox = 4'hC;  
-                4'h8: InvSBox = 4'hD;  
-                4'h3: InvSBox = 4'hE;  
-                4'h0: InvSBox = 4'hF;
+                4'h1: InvSBox = 4'h0;  4'hA: InvSBox = 4'h1;  4'h4: InvSBox = 4'h2;  4'hC: InvSBox = 4'h3;
+                4'h6: InvSBox = 4'h4;  4'hF: InvSBox = 4'h5;  4'hB: InvSBox = 4'h6;  4'hD: InvSBox = 4'h7;
+                4'h9: InvSBox = 4'h8;  4'h2: InvSBox = 4'h9;  4'h5: InvSBox = 4'hA;  4'hE: InvSBox = 4'hB;
+                4'h7: InvSBox = 4'hC;  4'h8: InvSBox = 4'hD;  4'h3: InvSBox = 4'hE;  4'h0: InvSBox = 4'hF;
                 default: InvSBox = 4'h0;
             endcase
         end
@@ -71,6 +46,7 @@ module GIFT64 (
         end
     endfunction
 
+
     function [63:0] ApplyInvSBox(input [63:0] x);
         integer j;
         reg [63:0] result;
@@ -80,23 +56,36 @@ module GIFT64 (
             ApplyInvSBox = result;
         end
     endfunction
+
+
     function [63:0] PBox(input [63:0] x);
+        integer j;
+        reg [63:0] y;
         begin
-            PBox = x;
+            for (j = 0; j < 64; j = j + 1)
+                y[(j % 4) * 16 + (j / 4)] = x[j];
+            PBox = y;
         end
     endfunction
 
+
     function [63:0] InversePBox(input [63:0] x);
+        integer j;
+        reg [63:0] y;
         begin
-            InversePBox = x;
+            for (j = 0; j < 64; j = j + 1)
+                y[j] = x[(j % 4) * 16 + (j / 4)];
+            InversePBox = y;
         end
     endfunction
+
     always @(posedge clk or posedge rst) begin
         if (rst) begin
             ciphertext <= 64'h0;
         end else begin
             state = plaintext;
             round_keys[0] = key;
+
             for (i = 1; i < ROUNDS; i = i + 1)
                 round_keys[i] = round_keys[i-1] ^ {64'h0, i};
 
