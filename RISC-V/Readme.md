@@ -1,6 +1,35 @@
 # 🧠 5-Stage Pipelined RISC-V Processor (Verilog)
 
-This project implements a simplified 5-stage pipelined processor using Verilog for a subset of RISC-V instructions. It is designed to help learners understand the key concepts of pipelining in processor architecture.
+The processor follows the classic 5-stage RISC-V pipeline:
+
+### 1. Instruction Fetch (IF) Stage
+- Fetches a 32-bit instruction from a predefined instruction memory (`instr_mem`) using the input program counter (`pc_in`).
+- Updates the program counter (`pc_out`) by incrementing it by 4 (assuming 32-bit instructions).
+- Addressing is aligned using `pc_in[5:2]`.
+
+### 2. Instruction Decode (ID) Stage
+- Decodes the fetched instruction to extract:
+  - `rs1`, `rs2`: Source registers
+  - `rd`: Destination register
+  - `imm`: Sign-extended immediate value (currently supports I-type format)
+- Future support for other instruction types (R, S, B, U, J) can be added.
+
+### 3. Execute (EX) Stage
+- Performs ALU operations. For demonstration, only the `addi` operation (`read_data1 + imm`) is implemented.
+- Easily extendable for additional operations like `sub`, `and`, `or`, etc.
+
+### 4. Memory Access (MEM) Stage
+- Acts as a pass-through stage in this version.
+- Placeholder for future integration of data memory to support instructions like `lw` and `sw`.
+
+### 5. Write Back (WB) Stage
+- Takes the result from the MEM stage and writes it back to the register file.
+- Currently writes the ALU result directly to the destination register.
+
+## 🧾 Register File
+- Implements 32 general-purpose registers.
+- Supports dual-read and single-write.
+- Prevents writes to register `x0` to adhere to RISC-V specification.
 
 ## 📌 Overview
 
