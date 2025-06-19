@@ -1,0 +1,18 @@
+module ring_counter (
+  input clk,
+  input reset,
+  output [3:0] q
+);
+  wire [3:0] d;
+
+  assign d[0] = q[3];
+  assign d[1] = q[0];
+  assign d[2] = q[1];
+  assign d[3] = q[2];
+
+  d_flip_flop dff0(clk, reset, d[0], q[0]);
+  d_flip_flop dff1(clk, reset, d[1], q[1]);
+  d_flip_flop dff2(clk, reset, d[2], q[2]);
+  d_flip_flop dff3(clk, reset, d[3], q[3]);
+
+endmodule
