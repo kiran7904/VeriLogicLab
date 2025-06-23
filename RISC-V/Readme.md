@@ -1,26 +1,5 @@
 # 🧠 5-Stage Pipelined RISC-V Processor (Verilog)
 
-            ┌──────────┐
- clk,reset→│ IF_stage │ → pc_out, instruction
-            └──────────┘
-                   ↓
-            ┌──────────┐
-           │ ID_stage │ → rs1, rs2, reg_data1, imm_out
-            └──────────┘
-                   ↓
-            ┌──────────┐
-           │ EX_stage │ → alu_result = reg_data1 + imm
-            └──────────┘
-                   ↓
-            ┌──────────┐
-           │ MEM_stage│ → mem_out (no memory access for now)
-            └──────────┘
-                   ↓
-            ┌──────────┐
-           │ WB_stage │ → wb_data → goes back to RegFile[rd]
-            └──────────┘
-
-
 The processor follows the classic 5-stage RISC-V pipeline:
 
 ### 1. Instruction Fetch (IF) Stage
