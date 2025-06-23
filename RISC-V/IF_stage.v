@@ -1,4 +1,4 @@
-Here’s your cleaned-up Verilog module without comments:
+
 module IF_stage(
     input clk,                 
     input reset,                 
