@@ -72,6 +72,14 @@ The following instructions are preloaded into `instr_mem`:
 | `0010111`           | `0x17`     | U-type  | `AUIPC`                          |                          |
 | `1110011`           | `0x73`     | I-type  | `ECALL`, `EBREAK`                |                          |
 
+| Instruction | `opcode` | `funct3` | `funct7` |
+| ----------- | -------- | -------- | -------- |
+| `ADD`       | 0110011  | 000      | 0000000  |
+| `SUB`       | 0110011  | 000      | 0100000  |
+| `AND`       | 0110011  | 111      | 0000000  |
+| `OR`        | 0110011  | 110      | 0000000  |
+| `SLL`       | 0110011  | 001      | 0000000  |
+
 ## 🧩 Instruction Format Breakdown
 
 ### Example: `addi x1, x0, 1`
