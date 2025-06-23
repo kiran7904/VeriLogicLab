@@ -59,6 +59,18 @@ The following instructions are preloaded into `instr_mem`:
 | 5–15  | 0x00000013 | `addi x0, x0, 0`       | NOPs to flush pipeline      |
 
 ---
+| **Opcode (7 bits)** | **Binary** | **Hex** | **Instruction Type**             | **Example Instructions** |
+| ------------------- | ---------- | ------- | -------------------------------- | ------------------------ |
+| `0110011`           | `0x33`     | R-type  | `ADD`, `SUB`, `AND`, `OR`, `SLL` |                          |
+| `0010011`           | `0x13`     | I-type  | `ADDI`, `SLTI`, `XORI`           |                          |
+| `0000011`           | `0x03`     | I-type  | `LW`, `LH`, `LB`                 |                          |
+| `0100011`           | `0x23`     | S-type  | `SW`, `SH`, `SB`                 |                          |
+| `1100011`           | `0x63`     | B-type  | `BEQ`, `BNE`, `BLT`              |                          |
+| `1101111`           | `0x6F`     | J-type  | `JAL`                            |                          |
+| `1100111`           | `0x67`     | I-type  | `JALR`                           |                          |
+| `0110111`           | `0x37`     | U-type  | `LUI` (Load Upper Immediate)     |                          |
+| `0010111`           | `0x17`     | U-type  | `AUIPC`                          |                          |
+| `1110011`           | `0x73`     | I-type  | `ECALL`, `EBREAK`                |                          |
 
 ## 🧩 Instruction Format Breakdown
 
