@@ -10,8 +10,6 @@ module uart_loopback_top (
 wire tx;        
 wire tx_en, rx_en;
 wire busy;
-
-// Instantiate baud generator
 baud_generator baud_gen (
     .clk(clk),
     .rx_en(rx_en),
@@ -25,8 +23,6 @@ uart_tx tx_inst (
     .tx(tx),
     .busy(busy)
 );
-
-// Receiver
 uart_rx rx_inst (
     .clk(clk),
     .rx(tx),          
