@@ -46,9 +46,9 @@ module tb_GIFT64;
         $display("Decrypted: %h", decrypted_output);
 
         if (decrypted_output == 64'h1122334455667788)
-            $display("✅ Test Passed: Decrypted matches original plaintext.");
+            $display("Test Passed: Decrypted matches original plaintext.");
         else
-            $display("❌ Test Failed: Decrypted output doesn't match.");
+            $display("Test Failed: Decrypted output doesn't match.");
 
         $finish;
     end
