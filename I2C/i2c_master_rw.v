@@ -2,12 +2,12 @@ module i2c_master_rw(
     input clk,
     input rst,
     input start,
-    input rw,              // 0 = write, 1 = read
-    input [7:0] din,       // Data to write
+    input rw,              
+    input [7:0] din,       
     output reg scl,
     inout sda,
     output reg done,
-    output reg [7:0] rx_data // Data read
+    output reg [7:0] rx_data 
 );
 
     parameter [6:0] ADDR = 7'b1010000;
@@ -38,13 +38,13 @@ module i2c_master_rw(
         if (rst) begin
             state <= 0;
             done <= 0;
-            sda_Out <= 1;// as the sda and scl should be high when idle state
+            sda_Out <= 
             sda_en <= 1;
             cnt <= 0;
             rx_data <= 0;
         end else begin
             case (state)
-                0: begin  // just starting the signal
+                0: begin  
                     done <= 0;
                     if (start) begin
                         cnt <= 6;
@@ -52,7 +52,7 @@ module i2c_master_rw(
                     end
                 end
 
-                1: begin // once start is high it will make sda low for start
+                1: begin 
                     if (scl == 1) begin
                         sda_en <= 1;
                         sda_Out <= 0;
@@ -62,7 +62,7 @@ module i2c_master_rw(
 
                 2: begin
                   if (scl == 0) begin  
-                    sda_Out <= ADDR[cnt];  // loading address
+                    sda_Out <= ADDR[cnt];  
                         if (cnt == 0)
                             state <= 3;
                         else
@@ -91,7 +91,7 @@ module i2c_master_rw(
                 5: begin
                     if (scl == 0) begin
                         sda_en <= 1;
-                      sda_Out <= din[cnt];// write data 
+                      sda_Out <= din[cnt];
                         if (cnt == 0)
                             state <= 6;
                         else
@@ -102,7 +102,7 @@ module i2c_master_rw(
                 6: begin
                     if (rw) begin
                         if (scl == 1) begin
-                          rx_data[cnt] <= sda; // reading data
+                          rx_data[cnt] <= sda; 
                             if (cnt == 0)
                                 state <= 7;
                             else
