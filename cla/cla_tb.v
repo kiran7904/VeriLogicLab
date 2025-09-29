@@ -4,7 +4,7 @@ module cla_tb;
   wire [3:0] sum;
   wire       cout;
 
-  cla_4bit uut (
+  cla uut (
     .a(a), 
     .b(b), 
     .cin(cin), 
