@@ -1,4 +1,4 @@
-module cla_4bit (
+module cla (
   input  [3:0] a, b,
   input        cin,
   output [3:0] sum,
