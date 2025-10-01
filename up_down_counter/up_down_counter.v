@@ -1,23 +1,14 @@
-module up_down_counter #(
-    parameter N = 8
-)(
-    input clk,
-    input reset,
-    input load,
-    input up_down,              // 1 = up, 0 = down
-    input [N-1:0] load_data,
-    output reg [N-1:0] count
-);
-
-always @(posedge clk or posedge reset) begin
-    if (reset)
-        count <= 0;
-    else if (load)
-        count <= load_data;
-    else if (up_down)
-        count <= count + 1;
+module up_down(output reg [3:0]q=4'b0000,input clk,rst,input updown);
+  always@(posedge clk)begin
+    if(rst)
+      if(updown)
+        q<=4'b0000;
+      else
+        q<=4'b1111;
     else
-        count <= count - 1;
-end
-
+      if(updown && q!==4'b1111)
+        q<=q+1;
+    else if(!updown && q!==4'b0000)
+        q<=q-1;
+  end
 endmodule
