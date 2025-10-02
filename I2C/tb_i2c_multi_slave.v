@@ -24,27 +24,25 @@ module tb_i2c_multi_slave();
         .rx_data(rx_data)
     );
 
-    wire [7:0] recv1;
-    i2c_slave #(.SLAVE_ADDR(7'b1010000)) slave1 (
-        .clk(clk),
-        .rst(rst),
-        .sda(sda),
-        .scl(scl),
-        .received_data(recv1),
-        .send_data(8'hA5),
-        .id(1)
-    );
+  wire [7:0] recv1;
+i2c_slave #(.SLAVE_ADDR(7'b1010000)) slave1 (
+    .clk(clk),
+    .rst(rst),
+    .sda(sda),
+    .scl(scl),
+    .received_data(recv1),
+    .send_data(8'hA5)
+);
 
-    wire [7:0] recv2;
-    i2c_slave #(.SLAVE_ADDR(7'b1010010)) slave2 (
-        .clk(clk),
-        .rst(rst),
-        .sda(sda),
-        .scl(scl),
-        .received_data(recv2),
-        .send_data(8'h5A),
-        .id(2)
-    );
+wire [7:0] recv2;
+i2c_slave #(.SLAVE_ADDR(7'b1010010)) slave2 (
+    .clk(clk),
+    .rst(rst),
+    .sda(sda),
+    .scl(scl),
+    .received_data(recv2),
+    .send_data(8'h5A)
+);
 
     always #5 clk = ~clk;
 
