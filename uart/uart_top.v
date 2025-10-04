@@ -1,38 +1,55 @@
-module uart_loopback_top (
-    input  wire clk,
-    input  wire send,
-    input  wire [7:0] data_in,
-    input  wire clr_ready,
-    output wire [7:0] data_out,
-    output wire data_ready,
-    output wire tx,
-    output wire busy
-);
+module uart_tb;
+reg clk = 0;
+reg rx = 1;
+reg [7:0] data_in;
+reg send;
+reg clr_ready;
+wire tx, busy, data_ready;
+wire [7:0] data_out;
 
-wire tx_en, rx_en;
-
-baud_generator baud_gen (
+uart_loopback_top uut (
     .clk(clk),
-    .rx_en(rx_en),
-    .tx_en(tx_en)
-);
-
-uart_tx tx_inst (
-    .clk(clk),
-    .tx_en(tx_en),
-    .data_in(data_in),
     .send(send),
+    .data_in(data_in),
+    .clr_ready(clr_ready),
+    .data_out(data_out),
+    .data_ready(data_ready),
     .tx(tx),
     .busy(busy)
 );
 
-uart_rx rx_inst (
-    .clk(clk),
-    .rx(tx),
-    .rx_en(rx_en),
-    .clr_ready(clr_ready),
-    .data_out(data_out),
-    .data_ready(data_ready)
-);
+always #10 clk = ~clk;
+
+initial begin
+    $dumpfile("uart_tb.vcd");
+    $dumpvars(0, uart_tb);
+
+    $monitor("Time=%0t | rx=%b | tx=%b | busy=%b | data_ready=%b | data_out=%h", 
+             $time, rx, tx, busy, data_ready, data_out);
+
+    clr_ready = 0;
+    #100;
+    data_in = 8'hA5;
+    send = 1;
+    #20 send = 0;
+
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 0;
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 1;
+
+    #500;
+    clr_ready = 1;
+    #20 clr_ready = 0;
+
+    #1000;
+    $stop;
+end
 
 endmodule
