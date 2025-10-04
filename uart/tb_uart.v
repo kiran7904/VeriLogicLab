@@ -20,6 +20,9 @@ uart_top uut (
 always #10 clk = ~clk;
 
 initial begin
+    $dumpfile("uart_tb.vcd");
+    $dumpvars(0, uart_tb);
+
     $monitor("Time=%0t | rx=%b | tx=%b | busy=%b | data_ready=%b | data_out=%h", 
              $time, rx, tx, busy, data_ready, data_out);
 
