@@ -6,15 +6,15 @@ reg send;
 wire tx, busy, data_ready;
 wire [7:0] data_out;
 
-uart_top uut (
+uart_loopback_top uut (
     .clk(clk),
-    .rx(rx),
-    .tx(tx),
-    .data_in(data_in),
     .send(send),
-    .busy(busy),
+    .data_in(data_in),
+    .clr_ready(clr_ready),
     .data_out(data_out),
-    .data_ready(data_ready)
+    .data_ready(data_ready),
+    .tx(tx),        
+    .busy(busy)     
 );
 
 always #10 clk = ~clk;
