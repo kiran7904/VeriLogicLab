@@ -3,6 +3,7 @@ reg clk = 0;
 reg rx = 1;
 reg [7:0] data_in;
 reg send;
+reg clr_ready;
 wire tx, busy, data_ready;
 wire [7:0] data_out;
 
@@ -13,8 +14,8 @@ uart_loopback_top uut (
     .clr_ready(clr_ready),
     .data_out(data_out),
     .data_ready(data_ready),
-    .tx(tx),        
-    .busy(busy)     
+    .tx(tx),
+    .busy(busy)
 );
 
 always #10 clk = ~clk;
@@ -26,23 +27,28 @@ initial begin
     $monitor("Time=%0t | rx=%b | tx=%b | busy=%b | data_ready=%b | data_out=%h", 
              $time, rx, tx, busy, data_ready, data_out);
 
+    clr_ready = 0;
     #100;
     data_in = 8'hA5;
     send = 1;
     #20 send = 0;
 
-    #8680 rx = 0;
-    #8680 rx = 1;
-    #8680 rx = 0;
-    #8680 rx = 1;
-    #8680 rx = 0;
-    #8680 rx = 0;
-    #8680 rx = 1;
-    #8680 rx = 0;
-    #8680 rx = 1;
-    #8680 rx = 1;
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 0;
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 0;
+    #500 rx = 1;
+    #500 rx = 1;
 
-    #100000;
+    #500;
+    clr_ready = 1;
+    #20 clr_ready = 0;
+
+    #1000;
     $stop;
 end
 
