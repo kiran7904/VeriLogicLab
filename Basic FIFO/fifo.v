@@ -1,6 +1,6 @@
 module sync_fifo #(
-    parameter DATA_WIDTH = 8,    // width of each data word
-    parameter DEPTH = 16         // number of entries
+    parameter DATA_WIDTH = 8,
+    parameter DEPTH = 16
 )(
     input  wire                  clk,
     input  wire                  rst,
@@ -12,17 +12,13 @@ module sync_fifo #(
     output reg                   empty
 );
 
-    // Calculate address width (log2 of DEPTH)
     localparam ADDR_WIDTH = $clog2(DEPTH);
 
-    // Memory array
     reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
 
-    // Pointers
     reg [ADDR_WIDTH:0] wr_ptr;
     reg [ADDR_WIDTH:0] rd_ptr;
 
-    // Write Operation
     always @(posedge clk or posedge rst) begin
         if (rst) begin
             wr_ptr <= 0;
@@ -32,7 +28,6 @@ module sync_fifo #(
         end
     end
 
-    // Read Operation
     always @(posedge clk or posedge rst) begin
         if (rst) begin
             rd_ptr <= 0;
@@ -43,7 +38,6 @@ module sync_fifo #(
         end
     end
 
-    // Status Flags
     always @(*) begin
         empty = (wr_ptr == rd_ptr);
         full  = ((wr_ptr[ADDR_WIDTH] != rd_ptr[ADDR_WIDTH]) &&
