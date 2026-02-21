@@ -1,4 +1,3 @@
-
 `timescale 1ns / 1ps
 
 module axi_slave_protocol #(
@@ -7,24 +6,24 @@ module axi_slave_protocol #(
 )(
     input  logic clk,
     input  logic rst_n,
-    // Write Address Channel
+
     input  logic [addr_width-1:0] awaddr,
     input  logic awvalid,
     output logic awready,
-    // Write Data Channel
+
     input  logic [data_width-1:0] wdata,
     input  logic [(data_width/8)-1:0] wstrb,
     input  logic wvalid,
     output logic wready,
-    // Write Response Channel
+
     output logic bvalid,
     input  logic bready,
     output logic [1:0] bresp,
-    // Read Address Channel
+
     input  logic [addr_width-1:0] araddr,
     input  logic arvalid,
     output logic arready,
-    // Read Data Channel
+
     output logic [data_width-1:0] rdata,
     output logic rvalid,
     input  logic rready,
@@ -32,44 +31,58 @@ module axi_slave_protocol #(
 );
 
     logic [data_width-1:0] regfile [0:3];
-    logic aw_en;
 
-    // --- Write Logic ---
-    assign awready = ~bvalid; // Simple flow control
-    assign wready  = awvalid && wvalid && ~bvalid;
+    logic aw_hs, w_hs, ar_hs;
+    logic aw_pending, w_pending;
+    logic [addr_width-1:0] awaddr_q;
+
+    assign awready = !aw_pending;
+    assign wready  = !w_pending;
+    assign arready = !rvalid;
+
+    assign aw_hs = awvalid && awready;
+    assign w_hs  = wvalid  && wready;
+    assign ar_hs = arvalid && arready;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            bvalid <= 0;
-            bresp  <= 0;
-            for (int i=0; i<4; i++) regfile[i] <= 0;
+            aw_pending <= 0;
+            w_pending  <= 0;
+            bvalid     <= 0;
+            bresp      <= 0;
+            rvalid     <= 0;
+            rresp      <= 0;
+            rdata      <= 0;
+            awaddr_q   <= 0;
+            for (int i = 0; i < 4; i++) regfile[i] <= 0;
         end else begin
-            if (awvalid && wvalid && !bvalid) begin
-                if (awaddr[3:2] < 4) begin
-                    for (int i=0; i<data_width/8; i++) begin
-                        if (wstrb[i]) regfile[awaddr[3:2]][8*i +: 8] <= wdata[8*i +: 8];
-                    end
-                    bresp <= 2'b00; // OKAY
-                end else begin
-                    bresp <= 2'b10; // SLVERR
-                end
-                bvalid <= 1;
-            end else if (bvalid && bready) begin
-                bvalid <= 0;
+            if (aw_hs) begin
+                awaddr_q   <= awaddr;
+                aw_pending <= 1;
             end
-        end
-    end
 
-    // --- Read Logic ---
-    assign arready = ~rvalid;
+            if (w_hs) begin
+                w_pending <= 1;
+            end
 
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            rvalid <= 0;
-            rdata  <= 0;
-            rresp  <= 0;
-        end else begin
-            if (arvalid && !rvalid) begin
+            if (aw_pending && w_pending && !bvalid) begin
+                if (awaddr_q[3:2] < 4) begin
+                    for (int i = 0; i < data_width/8; i++)
+                        if (wstrb[i])
+                            regfile[awaddr_q[3:2]][8*i +: 8] <= wdata[8*i +: 8];
+                    bresp <= 2'b00;
+                end else begin
+                    bresp <= 2'b10;
+                end
+                bvalid     <= 1;
+                aw_pending <= 0;
+                w_pending  <= 0;
+            end
+
+            if (bvalid && bready)
+                bvalid <= 0;
+
+            if (ar_hs) begin
                 if (araddr[3:2] < 4) begin
                     rdata <= regfile[araddr[3:2]];
                     rresp <= 2'b00;
@@ -78,9 +91,10 @@ module axi_slave_protocol #(
                     rresp <= 2'b10;
                 end
                 rvalid <= 1;
-            end else if (rvalid && rready) begin
-                rvalid <= 0;
             end
+
+            if (rvalid && rready)
+                rvalid <= 0;
         end
     end
 
