@@ -68,8 +68,8 @@ module axi_master_with_source (
                         // FETCH: Grabbing the destination address from our internal register
                         awaddr  <= internal_target_address; 
                         
-                        awlen   <= 8'd3;       // 4 beats
-                        awsize  <= 3'b010;     // 4 bytes per beat
+                        awlen   <= 8'd3;       // 4 beats number of beats=awlen+1 to sove 1 extra bit 
+                        awsize  <= 3'b010;     // 4 bytes per beat 2^2=4
                         awburst <= 2'b01;      // INCR burst
                         awvalid <= 1'b1;
                         state   <= ADDR;
