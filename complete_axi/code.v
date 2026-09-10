@@ -25,7 +25,19 @@
         v                                           v
    Internal response                          Internal response*/
 
-
+/*        AXI MASTER                         AXI SLAVE
+             |                                |
+             |                                |
+             |  AWADDR = 0x2000               |
+             |  AWLEN   = 3                   |
+             |  AWSIZE  = 2                   |
+             |  AWBURST = INCR                |
+             |  AWVALID                         |
+             |------------------------------->|
+             |                                |
+             |<-------------------- AWREADY ---|
+             |                                |
+             |       TRANSFER                 |*/
 module axi_aw_channel (
     input  wire        clk,
     input  wire        rst_n,
@@ -71,7 +83,17 @@ module axi_aw_channel (
     end
 
 endmodule
-
+/*        AXI MASTER                         AXI SLAVE
+             |                                |
+             |  WDATA = 0x12345678            |
+             |  WSTRB = 1111                  |
+             |  WLAST = 1                     |
+             |  WVALID                        |
+             |------------------------------->|
+             |                                |
+             |<--------------------- WREADY --|
+             |                                |
+             |        TRANSFER                |*/
 module axi_w_channel (
     input  wire        clk,
     input  wire        rst_n,
@@ -173,6 +195,18 @@ module axi_b_channel (
     end
 
 endmodule
+/*        AXI MASTER                         AXI SLAVE
+             |                                |
+             |  ARADDR = 0x3000               |
+             |  ARLEN   = 3                   |
+             |  ARSIZE  = 2                   |
+             |  ARBURST = INCR                |
+             |  ARVALID                       |
+             |------------------------------->|
+             |                                |
+             |<-------------------- ARREADY ---|
+             |                                |
+             |       TRANSFER                 |*/
 module axi_ar_channel (
     input  wire        clk,
     input  wire        rst_n,
@@ -215,6 +249,16 @@ module axi_ar_channel (
     end
 
 endmodule
+/*        AXI MASTER                         AXI SLAVE
+             |                                |
+             |<--------- RDATA = 0xAAAA ------|
+             |<--------- RRESP = OKAY --------|
+             |<--------- RLAST = 1 -----------|
+             |<--------- RVALID --------------|
+             |                                |
+             |---------- RREADY -------------->|
+             |                                |
+             |        TRANSFER                |*/
 module axi_r_channel (
     input  wire        clk,
     input  wire        rst_n,
