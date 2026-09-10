@@ -115,17 +115,31 @@ module axi_w_channel (
     end
 
 endmodule
-/*        AXI MASTER                         AXI SLAVE
-             |                                 |
-             | AWADDR ------------------------>|
-             |                                 |
-             | WDATA ------------------------->|
-             |                                 |
-             |                                 |
-             |<----------- BRESP [1:0] --------|
-             |<----------- BVALID -------------|
-             |                                 |
-             |----------- BREADY ------------->| */
+/*                           WRITE TRANSACTION
+
+   AXI MASTER                                      AXI SLAVE
+      |                                                |
+      |                                                |
+      |---- AWADDR, AWVALID -------------------------->|
+      |                                                |
+      |<---------------------------- AWREADY ----------|
+      |                                                |
+      |                                                |
+      |---- WDATA, WVALID ---------------------------->|
+      |                                                |
+      |<----------------------------- WREADY ----------|
+      |                                                |
+      |                                                |
+      |                    Slave processes the write   |
+      |                                                |
+      |                                                |
+      |<------------------- BRESP [1:0] ---------------|
+      |<------------------- BVALID --------------------|
+      |                                                |
+      |-------------------- BREADY ------------------->|
+      |                                                |
+      v                                                |
+   AXI MASTER */
 module axi_b_channel (
     input  wire        clk,
     input  wire        rst_n,
