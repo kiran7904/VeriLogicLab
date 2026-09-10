@@ -1,3 +1,31 @@
+/*                    INTERNAL REQUEST SIDE
+                  (your interconnect / logic)
+                            |
+        +-------------------+-------------------+
+        |                   |                   |
+        v                   v                   v
+   +-----------+       +-----------+       +-----------+
+   | AXI AW    |       | AXI W     |       | AXI AR    |
+   | CHANNEL   |       | CHANNEL   |       | CHANNEL   |
+   +-----------+       +-----------+       +-----------+
+        |                   |                   |
+        | AW                | W                 | AR
+        v                   v                   v
+   +---------------------------------------------------+
+   |                   AXI SLAVE                       |
+   +---------------------------------------------------+
+        |                                           |
+        | B response                                | R data
+        v                                           v
+   +-----------+                               +-----------+
+   | AXI B     |                               | AXI R     |
+   | CHANNEL   |                               | CHANNEL   |
+   +-----------+                               +-----------+
+        |                                           |
+        v                                           v
+   Internal response                          Internal response*/
+
+
 module axi_aw_channel (
     input  wire        clk,
     input  wire        rst_n,
