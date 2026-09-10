@@ -115,6 +115,17 @@ module axi_w_channel (
     end
 
 endmodule
+/*        AXI MASTER                         AXI SLAVE
+             |                                 |
+             | AWADDR ------------------------>|
+             |                                 |
+             | WDATA ------------------------->|
+             |                                 |
+             |                                 |
+             |<----------- BRESP [1:0] --------|
+             |<----------- BVALID -------------|
+             |                                 |
+             |----------- BREADY ------------->| */
 module axi_b_channel (
     input  wire        clk,
     input  wire        rst_n,
